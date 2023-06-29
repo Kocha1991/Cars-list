@@ -1,26 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
 
-function App() {
+import { getCars } from './api';
+
+import { Header } from './components/Header/Header';
+import { CarsTable } from './components/CarsTable/CarsTable';
+import { Car } from './types/car';
+import { ErrorLabel } from './components/ErrorLabel/ErrorLabel';
+
+const App: React.FC = () => {
+  const [cars, setCars] = useState<Car[]>([]);
+  const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    getCars().then((data) =>
+      typeof data === 'string' ? setError(data) : setCars(data.cars)
+    );
+  }, []);
+
+  console.log(cars);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='cars-list container'>
+      <Header />
+      <CarsTable cars={cars}/>
+      <ErrorLabel error={error} />
     </div>
   );
-}
+};
 
 export default App;
