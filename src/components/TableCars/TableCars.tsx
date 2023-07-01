@@ -4,20 +4,22 @@ import { Car } from '../../types/car'
 
 type Props = {
   columns: any
-  records: Car[]
+  cars: Car[]
 }
 
 export const TableCars: React.FC<Props> = ({
   columns,
-  records
+  cars
 }) => {
   return (
-    <DataTable 
-      columns={columns}
-      data={records}
-      selectableRows
-      fixedHeader
-      pagination
-    />
+    <div className='cars-table'>
+      <DataTable 
+        columns={columns}
+        data={cars}
+        selectableRows
+        fixedHeader
+        pagination
+      />
+    </div>
   ) 
 }
