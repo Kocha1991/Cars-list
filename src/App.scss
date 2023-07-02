@@ -1,0 +1,13 @@
+.container {
+  padding: 20px;
+}
+
+.select {
+  cursor: pointer;
+  transition: all 0.4s;
+
+  &:hover {
+    scale: 105%;
+    border-color: rgb(5, 142, 233);
+  }
+}

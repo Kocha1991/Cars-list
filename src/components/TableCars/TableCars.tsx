@@ -7,19 +7,25 @@ type Props = {
   cars: Car[]
 }
 
+// const customStyles = {
+//   headerRow: {
+//     style: {
+//       backgroundColor: 'green'
+//     }
+//   }
+// }
+
 export const TableCars: React.FC<Props> = ({
   columns,
   cars
 }) => {
   return (
-    <div className='cars-table'>
-      <DataTable 
-        columns={columns}
-        data={cars}
-        selectableRows
-        fixedHeader
-        pagination
-      />
-    </div>
+    <DataTable 
+      columns={columns}
+      data={cars}
+      highlightOnHover
+      fixedHeader
+      pagination
+    />
   ) 
 }
