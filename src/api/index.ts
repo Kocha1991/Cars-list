@@ -20,7 +20,7 @@ const options = {
   },
 };
 
-export async function getCars() {
+export async function getCarsAPI() {
   try {
     const { data } = await axios.get<GetUsersResponse>(
       BASE_URL + '/cars',

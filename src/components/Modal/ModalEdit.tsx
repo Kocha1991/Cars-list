@@ -1,8 +1,11 @@
 import React from 'react'
-import { SelectOptions } from '../../App'
 import classNames from 'classnames'
+import { SelectOptions } from '../../App'
+import { Car } from '../../types/car'
 
 type Props = {
+  car: Car | undefined
+  rowId: number | null
   modal: boolean
   onCloseModal: () => void
   selected: SelectOptions
@@ -11,16 +14,20 @@ type Props = {
 export const ModalEdit: React.FC<Props> = ({
   modal,
   onCloseModal,
-  selected
+  selected,
+  car,
+  rowId
 }) => {
   return (
-    <div className={classNames('modal', {
+    <div key={rowId} className={classNames('modal', {
       'is-active': modal && selected === SelectOptions.Edit
     })}>
       <div className="modal-background"></div>
       <div className="modal-card">
         <header className="modal-card-head">
-          <p className="modal-card-title">Modal title</p>
+          <p className="modal-card-title">
+            {`${car?.car_model} - Vin ${car?.car_vin}`}
+          </p>
           <button 
             className="delete" 
             aria-label="close"
@@ -32,7 +39,12 @@ export const ModalEdit: React.FC<Props> = ({
         </section>
         <footer className="modal-card-foot">
           <button className="button is-success">Save changes</button>
-          <button className="button">Cancel</button>
+          <button 
+            className="button"
+            onClick={onCloseModal}
+          >
+            Cancel
+          </button>
         </footer>
       </div>
     </div>
