@@ -8,8 +8,10 @@ import { SearchItems } from './components/SearchItems/SearchItems';
 import { Car } from './types/car';
 import { debounce } from 'lodash';
 import { IsLoader } from './components/Loader/IsLoader';
-import { ModalEdit } from './components/Modal/ModalEdit';
 import { ModalDelete } from './components/Modal/ModalDelete';
+import { Button } from './components/Button/Button';
+import { TestModal } from './components/Modal/TestModal';
+
 import './App.scss';
 
 export enum SelectOptions {
@@ -19,30 +21,33 @@ export enum SelectOptions {
 }
 
 const App: React.FC = () => {
+  const customCars: Car[] = JSON.parse(localStorage.getItem("customCars") ?? "[]")
   const [cars, setCars] = useState<Car[]>([]);
-  const [items, setItems] = useState<Car[] | null>([])
-  const [query, setQuery] = useState<string>('');
-  const [rowId, setRowId] = useState<number | null>(null);
-  const [selectedOptions, setSelectedOptions] = useState<SelectOptions>(SelectOptions.Action);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>('');
+  const [isCarModalOpen, setIsCarModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [error, setError] = useState<string>('');
 
+  const [selectedCar, setSelectedCar] = useState<Car | undefined>(undefined)
+
+ 
+
   useEffect(() => {
-    getCarsAPI().then((data) =>
-      typeof data === 'string' ? setError(data) : setCars(data.cars)
+    if (customCars.length) {
+      return setCars(customCars)
+    }
+    getCarsAPI().then((data) => {
+     
+      if(typeof data === 'string') {
+        return setError(data)
+      }
+
+      localStorage.setItem("customCars", JSON.stringify(data.cars))
+      setCars(data.cars)
+    }
+   
     );
   }, []);
-
-  // useEffect(() => {
-  //   localStorage.setItem('items', JSON.stringify(items))
-  // }, [items])
-
-  // useEffect(() => {
-  //   const items = JSON.parse(localStorage.getItem('items'));
-  //   if (items) {
-  //     setCars(items)
-  //   }
-  // }, [])
 
   const columns = [
       {
@@ -77,20 +82,18 @@ const App: React.FC = () => {
       },
       {
         name: 'Availability',
-        selector: (row: Car) => (
-          <span style={{ color: row.availability ? 'blue' : 'red' }}>
-            {row.availability ? 'Available' : 'Not available'}
-          </span>
-        ),
-        sortable: true,
+        selector: (row: Car) => row.availability ? 'Yes' : 'No',
+        cell: (row: Car) =>  <span style={{ color: row.availability ? 'blue' : 'red' }}>
+        {row.availability ? 'Yes' : 'No'}
+      </span>
       },
       {
         name: '',
         cell: (row: Car) => <select
           className='select'
           name='action'
-          value={selectedOptions}
-          onChange={(e) => handleChangeSelectedOptions(e, row.id)}
+          value={SelectOptions.Action}
+          onChange={(e) => handleChangeSelectedOptions(e, row)}
         > 
           <option 
             selected 
@@ -108,33 +111,44 @@ const App: React.FC = () => {
 
   const handleChangeSelectedOptions = (
     e: React.ChangeEvent<HTMLSelectElement>,
-    carId: number
+    car: Car
   ) => {
-    cars.map(car => {
-      if (car.id === carId) {
-        setSelectedOptions(e.target.value as SelectOptions )
-        setIsModalOpen(true)
-      }
-    })
+    const action = e.target.value as SelectOptions
+    setSelectedCar(car);
 
-    setRowId(carId);
+    if (action === SelectOptions.Delete) {
+     return setIsDeleteModalOpen(true)
+    }
+
+    return setIsCarModalOpen(true)
   }
 
-  const carInRow = cars.find(item => item.id === rowId);
-
   const onCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedOptions(SelectOptions.Action)
+    if(isCarModalOpen) {
+      setIsCarModalOpen(false)
+    }
+    if (isDeleteModalOpen){
+      setIsDeleteModalOpen(false)
+    }
+    setSelectedCar(undefined)
   }
 
   const removeCar = () => {
-    setCars(cars.filter(car => car.id !== rowId))
+    localStorage.setItem(
+      "customCars", JSON.stringify(
+        cars.filter(car => car.id !== selectedCar?.id
+    )))
     onCloseModal()
   }
 
+  const onAddCar = () => setIsCarModalOpen(true)
+  
+  const onSaveNewCar = (newCar: Car) => {
+    localStorage.setItem("customCars", JSON.stringify([newCar, ...cars]))
+  }
 
   const debouncedSearch = debounce((arg) => {
-    setQuery((arg))
+    setSearch((arg))
   }, 800)
 
   const handleSearch = (
@@ -151,10 +165,13 @@ const App: React.FC = () => {
       row.car_model_year.toString(),
       row.car_vin.toString(),
       row.price.toString(),
+      row.availability ? 'Yes' : 'No',
     ]
     
     return columnsToSearchIn.some(columnToSearch => 
-      columnToSearch.toLowerCase().includes(query.toLowerCase())
+      columnToSearch === 'Yes' || columnToSearch === 'No' 
+        ? columnToSearch.toLowerCase() === search.toLowerCase() 
+        : columnToSearch.toLowerCase().includes(search.toLowerCase())
     )
   })
 
@@ -162,31 +179,36 @@ const App: React.FC = () => {
     <div className='cars-body'>
       <div className='container'>
         <Header />
-        <SearchItems 
-          handleSearch={handleSearch}
-        />
+
+        <div className='cars-list-option'>
+          <SearchItems 
+            handleSearch={handleSearch}
+          />
+          <Button 
+            onAddCar={onAddCar}
+          />
+        </div>
+
         {!cars.length && <IsLoader />}
+
         <TableCars 
-          cars={visibleCars} 
-          columns={columns} 
+          cars={visibleCars}
+          columns={columns}
         />
-        {selectedOptions === SelectOptions.Edit 
-          ? <ModalEdit
-              rowId={rowId}
-              car={carInRow}
-              modal={isModalOpen}
-              onCloseModal={onCloseModal}
-              selected={selectedOptions}
-            />
-          : <ModalDelete
-              rowId={rowId}
-              car={carInRow}
-              modal={isModalOpen}
+      
+        {isDeleteModalOpen 
+          && selectedCar 
+          && <ModalDelete
+              car={selectedCar}
               onCloseModal={onCloseModal}
               onRemoveCar={removeCar}
-              selected={selectedOptions}
-            />
-        }
+            />}
+        {isCarModalOpen 
+          && <TestModal 
+            car={selectedCar}
+            onSubmit={onSaveNewCar}
+            onCloseModal={onCloseModal}
+          />}
 
         <ErrorLabel error={error} />
       </div>

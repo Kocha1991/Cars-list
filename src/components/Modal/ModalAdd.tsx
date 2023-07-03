@@ -1,46 +1,50 @@
 import React, { useState } from 'react'
 import classNames from 'classnames'
-import { SelectOptions } from '../../App'
 import { Car } from '../../types/car'
 
 type Props = {
-  car: Car | undefined
-  rowId: number | null
-  modal: boolean
+  addCar: boolean
   onCloseModal: () => void
-  selected: SelectOptions
+  cars: Car[]
+  saveCar: (newCar: Car) => void
 }
 
-export const ModalEdit: React.FC<Props> = ({
-  modal,
+export const ModallAdd: React.FC<Props> = ({
+  addCar,
   onCloseModal,
-  selected,
-  car,
-  rowId,
-
+  saveCar
 }) => {
-  // const [color, setColor] = useState<string>(car.color);
+  const [availability, setAvailability] = useState<boolean | null>(null);
+  const [company, setCompany] = useState<string>('');
+  const [color, setColor] = useState<string>('');
+  const [model, setModel] = useState<string>('');
+  const [year, setYear] = useState<number| null>(null)
+  const [vin, setVin] = useState<number| null>(null)
+  const [price, setPrice] = useState<number | null>(null)
+
+  const idNewCar = new Date();
+
+  const newCar: Car = {
+    availability:!!availability,
+    car: company,
+    car_color: color,
+    car_model: model,
+    car_model_year: year ?? 0,
+    car_vin: String(vin ?? 0),
+    id: idNewCar.getTime(),
+    price: String(price ?? 0),
+  }
   
-  // const handleSave = () => {
-  //   // Save the updated data
-  //   const updatedCar = {
-  //     ...car,
-  //     color,
-  //     price,
-  //     availability,
-  //   };
-  //   // onSave(updatedCar);
-  // };
- 
+
   return (
-    <div key={rowId} className={classNames('modal', {
-      'is-active': modal && selected === SelectOptions.Edit
-    })}>
+    <form 
+      className={classNames('modal', {'is-active': addCar})}
+    >
       <div className="modal-background"></div>
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">
-            Edit car
+            Add car
           </p>
           <button 
             className="delete" 
@@ -53,8 +57,7 @@ export const ModalEdit: React.FC<Props> = ({
             <input
               className='input'
               type="text" 
-              value={car?.car} 
-              disabled 
+              onChange={(e) => setCompany(e.target.value)}
             />
             <label className='modal-item__text'>Company</label>
           </div>
@@ -62,8 +65,7 @@ export const ModalEdit: React.FC<Props> = ({
             <input 
               className='input'
               type="text" 
-              value={car?.car_model} 
-              disabled 
+              onChange={(e) => setModel(e.target.value)}
             />
             <label className='modal-item__text'>Model</label>
           </div>
@@ -71,8 +73,7 @@ export const ModalEdit: React.FC<Props> = ({
             <input 
               className='input'
               type="text" 
-              value={car?.car_vin} 
-              disabled 
+              onChange={(e) => setVin(Number(e.target.value))}
             />
             <label className='modal-item__text'>VIN</label>
           </div>
@@ -80,8 +81,7 @@ export const ModalEdit: React.FC<Props> = ({
             <input 
               className='input'
               type="text" 
-              value={car?.car_model_year} 
-              disabled 
+              onChange={(e) => setYear(Number(e.target.value))}
             />
             <label className='modal-item__text'>Year</label>
           </div>
@@ -89,8 +89,7 @@ export const ModalEdit: React.FC<Props> = ({
             <input 
               className='input'
               type="text" 
-              // value={color}
-              // onChange={(e) => setColor(e.target.value)}
+              onChange={(e) => setColor(e.target.value)}
             />
             <label className='modal-item__text'>Color</label>
           </div>
@@ -98,6 +97,7 @@ export const ModalEdit: React.FC<Props> = ({
             <input
               className='input'
               type="text" 
+              onChange={(e) => setPrice(Number(e.target.value))}
             />
             <label className='modal-item__text'>Price</label>
           </div>
@@ -105,7 +105,8 @@ export const ModalEdit: React.FC<Props> = ({
             <input 
               id='Availability' 
               type="checkbox" 
-              className='checkbox'/>
+              className='checkbox'
+            />
             <label 
               htmlFor='Availability' 
               className='checkbox'
@@ -114,10 +115,8 @@ export const ModalEdit: React.FC<Props> = ({
             </label>
           </div>
         </section>
-        <footer className="modal-card-foot">
-          <button className="button is-success">Save changes</button>
-        </footer>
+        
       </div>
-    </div>
+    </form>
   )
 }

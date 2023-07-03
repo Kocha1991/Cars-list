@@ -1,30 +1,21 @@
 import React from 'react';
-import { SelectOptions } from '../../App';
-import { Car } from '../../types/car';
 import classNames from 'classnames';
+import { Car } from '../../types/car';
 import './Modal.scss';
 
 type Props = {
-  car: Car | undefined
-  rowId: number | null
-  modal: boolean
+  car: Car
   onCloseModal: () => void
   onRemoveCar: () => void
-  selected: SelectOptions
 }
 
 export const ModalDelete: React.FC<Props> = ({
-  modal,
   onCloseModal,
   onRemoveCar,
-  selected,
   car,
-  rowId
 }) => {
   return (
-    <div key={rowId} className={classNames('modal', {
-      'is-active': modal && selected === SelectOptions.Delete
-    })}>
+    <div className={classNames('modal is-active')}>
       <div className="modal-background"></div>
       <div className="modal-card">
         <header className="modal-card-head"/>
