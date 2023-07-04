@@ -45,6 +45,7 @@ const App: React.FC = () => {
       localStorage.setItem('customCars', JSON.stringify(data.cars));
       setCars(data.cars);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const columns = [
@@ -137,6 +138,8 @@ const App: React.FC = () => {
   };
 
   const removeCar = () => {
+    setCars(cars.filter((car) => car.id !== selectedCar?.id));
+
     localStorage.setItem(
       'customCars',
       JSON.stringify(cars.filter((car) => car.id !== selectedCar?.id))
@@ -149,8 +152,29 @@ const App: React.FC = () => {
     setIsAddCar(true);
   };
 
-  const onSaveNewCar = (newCar: Car) => {
-    localStorage.setItem('customCars', JSON.stringify([newCar, ...cars]));
+  const onSaveCar = (newCar: Car) => {
+    let updatededCars;
+
+    if (isAddCar) {
+      updatededCars = [newCar, ...cars]
+    } else {
+      updatededCars = cars.map(car => {
+
+      if (car.id === newCar.id) {
+        
+        return newCar;
+      }
+
+      return car
+      })
+}
+
+    setCars(updatededCars)
+
+    localStorage.setItem('customCars', JSON.stringify(updatededCars));
+
+    setIsCarModalOpen(false);
+    setIsAddCar(false);
   };
 
   const debouncedSearch = debounce((arg) => {
@@ -204,7 +228,7 @@ const App: React.FC = () => {
           <Modal
             isAddCar={isAddCar}
             car={selectedCar}
-            onSubmit={onSaveNewCar}
+            onSubmit={onSaveCar}
             onCloseModal={onCloseModal}
           />
         )}

@@ -16,7 +16,11 @@ export const Modal: React.FC<Props> = ({
   car,
   isAddCar,
 }) => {
-  const { register, handleSubmit } = useForm<Car>({
+  const { 
+    register, 
+    handleSubmit,
+    formState: { errors }
+} = useForm<Car>({
     defaultValues: {
       availability: car?.availability,
       car: car?.car ?? '',
@@ -28,8 +32,6 @@ export const Modal: React.FC<Props> = ({
       price: car?.price ?? '0',
     },
   });
-
-  console.log(car);
 
   return (
     <form
@@ -54,9 +56,11 @@ export const Modal: React.FC<Props> = ({
               className='input'
               type='text'
               disabled={!isAddCar}
+              required={isAddCar}
             />
             <label className='modal-item__text'>Company</label>
           </div>
+
           <div className='modal-item'>
             <input
               {...register('car_model')}
@@ -64,19 +68,23 @@ export const Modal: React.FC<Props> = ({
               className='input'
               type='text'
               disabled={!isAddCar}
+              required={isAddCar}
             />
             <label className='modal-item__text'>Model</label>
           </div>
+
           <div className='modal-item'>
             <input
               {...register('car_vin')}
               placeholder='VIN'
               className='input'
-              type='namber'
               disabled={!isAddCar}
+              required={isAddCar}
             />
             <label className='modal-item__text'>VIN</label>
+            <p>{errors.car_vin?.message}</p>
           </div>
+
           <div className='modal-item'>
             <input
               {...register('car_model_year')}
@@ -84,33 +92,40 @@ export const Modal: React.FC<Props> = ({
               className='input'
               type='number'
               disabled={!isAddCar}
+              required={isAddCar}
             />
             <label className='modal-item__text'>Year</label>
           </div>
+
           <div className='modal-item'>
             <input
               {...register('car_color')}
               placeholder='Color'
               className='input'
               type='text'
+              required={isAddCar}
             />
             <label className='modal-item__text'>Color</label>
           </div>
+
           <div className='modal-item'>
             <input
               {...register('price')}
               placeholder='Price'
               className='input'
               type='number'
+              required={isAddCar}
             />
             <label className='modal-item__text'>Price</label>
           </div>
+
           <div className='modal-item'>
             <input
               {...register('availability')}
               id='Availability'
               type='checkbox'
               className='checkbox'
+              required={isAddCar}
             />
             <label htmlFor='Availability' className='checkbox'>
               Availability
@@ -118,7 +133,10 @@ export const Modal: React.FC<Props> = ({
           </div>
         </section>
         <footer className='modal-card-foot'>
-          <button onClick={onCloseModal} className='button is-success'>
+          <button 
+            type='submit' 
+            className='button is-success'
+          >
             Save
           </button>
         </footer>
