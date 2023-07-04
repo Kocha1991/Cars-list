@@ -1,4 +1,5 @@
 #Технічне завдання:
+
 ##1. The task is to develop the page that will contain table with cars list. Table should contain listed columns. Table should use pagination locally. Search on top of the table should work accross all entries, not only listed page.
   - Company
   - Model
@@ -8,9 +9,11 @@
   - Price
   - Availability
   - Actions columns
+  - 
 ##2. Actions column should contain dropdown with listed actions. Each option should open respected modal window.
   - Edit
   - Delete
+  - 
 ##3. Edit modal should contain all data for selected car, but only some fields should be editable
   - Disabled:
     - Company
@@ -21,7 +24,11 @@
     - Color
     - Price
     - Availability
+    - 
 ##4. Delete modal should contain question is user sure he wants to perform this action.
+
 ##5. Page should contain "Add car" button that opens add modal. Add modal should be similar to Edit modal, but all fields enabled and empty by default
+
 ##6. All user actions should affect the table. Data should be saved between page reloads
+
 ##7. API to get initial data - https://documenter.getpostman.com/view/5596891/SW7eyRFV?version=latest#d10a962e-a3de-4c0e-9fda-7d472c20ba24
